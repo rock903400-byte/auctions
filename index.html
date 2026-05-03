@@ -9,47 +9,50 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --primary:      #0f172a;
+      --primary:      #0f172a; /* 深午夜藍：代表穩重、信任 */
       --primary-light:#1e293b;
-      --accent:       #059669;
-      --secondary:    #d97706;
-      --danger:       #e11d48;
-      --bg:           #f8fafc;
+      --accent:       #10b981; /* 翡翠綠：代表獲利、成長 */
+      --secondary:    #b45309; /* 琥珀金：代表價值、專業 */
+      --danger:       #ef4444; /* 警示紅 */
+      --bg:           #f1f5f9; /* 淺灰藍背景 */
       --surface:      #ffffff;
-      --text-main:    #0f172a;
+      --text-main:    #1e293b;
       --text-muted:   #64748b;
-      --border:       #f1f5f9;
-      --radius:       16px;
-      --shadow:       0 4px 6px -1px rgb(0 0 0 / 0.05);
+      --border:       #e2e8f0;
+      --radius:       12px;    /* 稍微縮小圓角，更顯俐落專業 */
+      --shadow:       0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg:    0 10px 15px -3px rgb(0 0 0 / 0.1);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+      font-family: 'PingFang TC', 'Inter', -apple-system, sans-serif;
       background-color: var(--bg);
       color: var(--text-main);
       padding-bottom: 40px;
+      line-height: 1.5;
     }
 
     header {
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(12px);
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
+      background: var(--primary);
+      color: white;
+      padding: 1rem;
       position: sticky; top: 0; z-index: 100;
+      box-shadow: var(--shadow-lg);
     }
     .header-content {
       max-width: 600px; margin: 0 auto;
       display: flex; justify-content: space-between; align-items: center;
     }
-    .brand { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+    .brand { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; }
+    .brand span { color: var(--accent); }
 
-    .user-zone { display: flex; align-items: center; gap: 8px; }
+    .user-zone { display: flex; align-items: center; gap: 10px; }
     .btn-auth {
-      padding: 6px 12px; border-radius: 8px; border: 1px solid var(--primary);
-      font-size: 0.8rem; font-weight: 700; cursor: pointer; background: transparent;
+      padding: 6px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3);
+      font-size: 0.8rem; font-weight: 600; cursor: pointer; background: transparent; color: white;
     }
-    .btn-auth.login { background: var(--primary); color: white; }
+    .btn-auth.login { background: var(--accent); border-color: var(--accent); color: var(--primary); }
 
     #auth-modal {
       position: fixed; inset: 0; background: rgba(0,0,0,0.5); 
@@ -73,8 +76,22 @@
     .tab-btn {
       padding: 6px 18px; border-radius: 100px; border: none; font-size: 0.85rem; font-weight: 700;
       cursor: pointer; color: var(--text-muted); background: transparent; transition: 0.3s;
+      display: flex; align-items: center; gap: 6px;
     }
     .tab-btn.active { background: var(--surface); color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .count-badge {
+      font-size: 0.7rem; background: #e2e8f0; color: var(--text-muted); 
+      padding: 2px 6px; border-radius: 10px; min-width: 20px;
+    }
+    .tab-btn.active .count-badge { background: var(--primary); color: white; }
+
+    .list-info-bar {
+      max-width: 600px; margin: 0.5rem auto 1rem; padding: 0 1rem;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.85rem; font-weight: 700; color: var(--text-muted);
+    }
+    .stat-pill { background: white; padding: 4px 12px; border-radius: 100px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+    .stat-pill i { margin-right: 4px; color: var(--accent); }
 
     .filter-grid {
       background: var(--surface); padding: 1rem; border-radius: var(--radius);
@@ -97,7 +114,7 @@
     }
     .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
     .county-tag { background: #f1f5f9; color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; }
-    .roi-num { font-size: 1.5rem; font-weight: 900; line-height: 1; letter-spacing: -1px; }
+    .roi-num { font-size: 1.6rem; font-weight: 900; line-height: 1; letter-spacing: -1px; }
     
     .addr-area { padding: 0.8rem; background: #f8fafc; border-radius: 12px; border: 1px solid #edf2f7; cursor: pointer; }
     .addr-main { font-weight: 800; font-size: 1rem; line-height: 1.4; }
@@ -137,7 +154,7 @@
 
 <header>
   <div class="header-content">
-    <div class="brand">法拍補償 PRO</div>
+    <div class="brand">法拍補償 <span>PRO</span></div>
     <div class="user-zone" id="user-zone">
       <button class="btn-auth login" onclick="toggleModal(true)">登入</button>
     </div>
@@ -161,8 +178,8 @@
 
 <section class="filter-section">
   <div class="tab-box">
-    <button id="t-gen" class="tab-btn active" onclick="tab('general')">一般</button>
-    <button id="t-buy" class="tab-btn" onclick="tab('special')">應買</button>
+    <button id="t-gen" class="tab-btn active" onclick="tab('general')">一般 <span class="count-badge">0</span></button>
+    <button id="t-buy" class="tab-btn" onclick="tab('special')">應買 <span class="count-badge">0</span></button>
   </div>
   <div class="filter-grid">
     <div class="f-group">
@@ -182,6 +199,13 @@
     </div>
   </div>
 </section>
+
+<div class="list-info-bar">
+  <div class="stat-pill" id="result-count"><i class="fa-solid fa-list-ul"></i> 正在載入...</div>
+  <div style="font-size: 0.75rem; color: var(--text-muted);">
+    <i class="fa-solid fa-clock-rotate-left"></i> 即時更新
+  </div>
+</div>
 
 <section id="list" class="list"></section>
 <div id="toast">已複製地址</div>
@@ -235,6 +259,10 @@
       rawData.general = preprocess(data.filter(item => !item.is_special_buy));
       rawData.special = preprocess(data.filter(item => item.is_special_buy));
       
+      // 更新標籤數量
+      document.getElementById('t-gen').querySelector('.count-badge').innerText = rawData.general.length;
+      document.getElementById('t-buy').querySelector('.count-badge').innerText = rawData.special.length;
+
       initCounty();
       render();
     } catch (err) {
@@ -266,6 +294,9 @@
 
     list.sort((a, b) => fSort === 'roiDesc' ? b.roi - a.roi : a.numPrice - b.numPrice);
 
+    // 更新搜尋結果數量
+    document.getElementById('result-count').innerHTML = `<i class="fa-solid fa-list-ul"></i> 搜尋結果：${list.length} 筆`;
+
     const container = document.getElementById('list');
     if (list.length === 0) {
       container.innerHTML = '<div style="text-align:center; padding:3rem; color:var(--text-muted)">尚無符合條件的標案</div>';
@@ -278,7 +309,7 @@
               <div class="county-tag">${item.county}</div>
               <div class="roi-badge">
                 <span class="roi-num" style="color:${roiColor}">${item.roi.toFixed(1)}%</span>
-                <span style="font-size:0.6rem; font-weight:800; color:${roiColor}">ROI</span>
+                <div class="roi-lbl" style="color:${roiColor}">ROI 報酬率</div>
               </div>
             </div>
             <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted)">${item.court_name || ''} ${item.sale_type || ''}</div>
